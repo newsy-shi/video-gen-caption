@@ -6,7 +6,7 @@
 
 ### 多轴分类，不做一棵混杂的大树
 
-一个镜头可以同时是“中近景 + 低机位 + 侧面视角 + 双人构图 + 缓慢推轨 + 浅景深”。这些标签回答不同问题，彼此可以同时成立。因此，体系采用多个**正交标签轴**；每个轴内部再设层级和可选值。
+一个镜头可以同时是“中近景 + 低机位 + 侧面视角 + 双人镜头 + 缓慢推轨 + 浅景深”。这些标签回答不同问题，彼此可以同时成立。因此，体系采用多个**正交标签轴**；每个轴内部再设层级和可选值。
 
 ### 标签只回答一个问题
 
@@ -16,7 +16,6 @@
 | 主体配置 | 画面中有几个主要主体？ | 单人、双人、群像 |
 | 机位角度 | 摄影机从什么高度和方向观察？ | 平视、俯拍、仰拍 |
 | 视点关系 | 画面属于谁的观看位置？ | 客观视点、人物主观视点 |
-| 构图关系 | 主体如何安排在画面内？ | 居中、偏置、对称、留白 |
 | 镜头功能 | 这个镜头在叙事或剪辑里做什么？ | 建立镜头、反应镜头、插入镜头 |
 | 摄影机运动 | 摄影机如何改变位置或朝向？ | 推轨、横移、摇摄、环绕 |
 | 主体运动 | 人物或物体如何行动？ | 静止、走近、转身、奔跑 |
@@ -40,12 +39,11 @@
         ├── C. 主体配置
         ├── D. 机位与拍摄角度
         ├── E. 视点与观众关系
-        ├── F. 构图与画面布局
-        ├── G. 摄影机运动
-        ├── H. 主体运动与场面调度
-        ├── I. 镜头、焦点与景深
-        ├── J. 时间、镜头长度与剪辑衔接
-        └── K. 意图与情绪（解释字段，不是技术分类）
+        ├── F. 摄影机运动
+        ├── G. 主体运动与场面调度
+        ├── H. 镜头、焦点与景深
+        ├── I. 时间、镜头长度与剪辑衔接
+        └── J. 意图与情绪（解释字段，不是技术分类）
 ```
 
 一个场景可以由一个或多个镜头组成。**长镜头**描述镜头持续时间和连续性，**全景**描述景别；一个镜头可以同时是长镜头和全景。**主观镜头**描述观看视点，**特写**描述景别；它们也可以组合。
@@ -58,7 +56,7 @@
 |---|---|---|
 | `establishing` 建立镜头 | 建立新场景的位置、时间、环境或空间关系 | 可以是固定全景，也可以是运动镜头；“全景”本身不保证有建立功能 |
 | `master` 主镜头 | 覆盖整个场景或主要表演段落，常作为剪辑覆盖基础 | 它可以是中景、全景或运动长镜头；“长镜头”强调连续时间，不等于主镜头 |
-| `coverage` 覆盖镜头 | 为场景提供可剪辑的补充视角或表演覆盖 | 这是制作/剪辑功能，不是画面构图类型 |
+| `coverage` 覆盖镜头 | 为场景提供可剪辑的补充视角或表演覆盖 | 这是制作/剪辑功能，不是景别或机位类型 |
 | `reaction` 反应镜头 | 以人物对事件的反应为主要信息 | 反应镜头常为近景，但也能以远景呈现群体反应 |
 | `insert` 插入镜头 | 插入关键物件、手部或文字等细节信息 | 更偏叙事功能；常用特写，但不等同于特写 |
 | `cutaway` 插入/旁切镜头 | 暂时离开当前主要动作，显示相关物件、环境或旁观者 | 可用于交代信息、转场或延缓动作，不固定景别 |
@@ -162,43 +160,12 @@
 | `objective` 客观视点 | 画面不明确代表某个角色的眼睛 | 不是“绝对中立”；摄影机仍可带有明显风格 |
 | `subjective_pov` 主观视点 | 画面模拟指定角色当下所见 | POV 可与手持、移动和任意景别组合 |
 | `observer` 观察者视点 | 远距离或旁观位置观察事件 | 不等于长焦镜头；观察感也由景别和空间关系形成 |
-| `surveillance` 监控视点 | 固定、隐蔽、受限或高位监视构图 | 不是仅凭高角度即可判定；需要叙事意图或设备视角依据 |
+| `surveillance` 监控视点 | 固定、隐蔽、受限或高位的监视式镜头 | 不是仅凭高角度即可判定；需要叙事意图或设备视角依据 |
 | `direct_address` 直视观众 | 主体明确看向镜头/观众 | 和 POV 不同：人物看镜头不代表镜头属于人物视点 |
 
 推荐把人物 POV 绑定到角色：`viewpoint: subjective_pov`、`viewpoint_subject_id: character_A`。
 
-## 8. F 类：构图与画面布局 `composition`
-
-构图标签回答“主体、前景、背景和留白如何安排”，不回答主体有多大或摄影机从哪里拍。
-
-### F1. 主体位置 `subject_placement`
-
-- `center` 居中
-- `left_third` / `center_third` / `right_third` 三分区域
-- `upper_third` / `lower_third` 上/下区域
-- `edge_left` / `edge_right` 贴近画面边缘
-- `offscreen_left` / `offscreen_right` 画外主体或视线方向
-
-### F2. 画面组织 `layout`
-
-- `symmetrical` 对称
-- `balanced_asymmetry` 非对称平衡
-- `leading_lines` 引导线
-- `diagonal` 对角线构图
-- `layered_depth` 前/中/后景分层
-- `foreground_framing` 前景框景
-- `over_the_shoulder` 过肩构图
-- `dirty_single` 带另一人物虚化前景的单人构图
-- `negative_space` 留白/负空间
-- `deep_composition` 深空间构图
-- `flat_composition` 扁平/弱透视构图
-- `split_screen` 分屏（若为后期效果，应同时记录编辑/画面格式）
-
-### F3. 画面占比与安全区 `composition.safe_area`
-
-需要时可标主体头顶空间、视线空间、动作空间和字幕安全区：`headroom: tight / normal / generous`、`look_room: tight / normal / generous`、`subtitle_safe_area: bottom / top / none`。这些是构图属性，不是景别。
-
-## 9. G 类：摄影机运动 `camera.motion`
+## 8. F 类：摄影机运动 `camera.motion`
 
 将运动分为**空间平移、机位旋转、镜头焦距变化、复合路径**；稳定方式另列。`tracking` 是跟随主体的关系，也应与实际路径分开。
 
@@ -230,7 +197,7 @@
 - `follow_from_rear` 后方跟随
 - `follow_profile` 侧面平行跟随
 - `lead` 摄影机在前方引导主体
-- `reframe_to_subject` 主体在动，摄影机调整构图保持主体可见
+- `reframe_to_subject` 主体在动，摄影机调整画框或朝向以保持主体可见
 - `independent` 摄影机按自身路线移动，不依主体运动
 
 跟拍方向不是 `dolly` 的同义词。正面跟拍通常是摄影机倒退，侧面跟拍通常是 truck，背后跟拍可以用 dolly、稳定器或车辆拍摄；如需表达几何路径，把它们分别标注。
@@ -251,7 +218,7 @@
 
 支撑方式是设备/质感标签，不是路径：`tripod`、`dolly_rig`、`steadicam`、`gimbal`、`handheld`、`jib_crane`、`drone`、`vehicle_rig`、`body_mount`、`motion_control_rig`。例如“gimbal + forward tracking”是稳定方式与移动路径组合；“handheld”也可能原地持机，并非一定跟拍。
 
-## 10. H 类：主体运动与场面调度 `subject.action`
+## 9. G 类：主体运动与场面调度 `subject.action`
 
 这一轴只描述画面中人物、动物和物件的变化，不描述摄影机如何移动。
 
@@ -273,7 +240,7 @@
 
 记录主体在场景中的位置、相互距离、视线和遮挡关系：`screen_position`、`depth_plane`、`eyeline_target`、`facing_direction`、`relative_position_to`、`enters_frame`、`exits_frame`。场面调度描述人如何在空间里移动；摄影机路径仍写在 `camera.motion`。
 
-## 11. I 类：镜头、焦点与景深 `optics`
+## 10. H 类：镜头、焦点与景深 `optics`
 
 ### I1. 焦距观感 `focal_length_look`
 
@@ -296,7 +263,7 @@
 
 可选标签：`bokeh`、`lens_flare`、`motion_blur`、`distortion`、`vignette`、`chromatic_aberration`、`anamorphic_streak`、`film_grain`、`shutter_smear`。这是镜头呈现特征，不属于摄影机运动；同时要区别后期视觉效果与物理镜头效果。
 
-## 12. J 类：时间、镜头长度与剪辑衔接 `temporal_edit`
+## 11. I 类：时间、镜头长度与剪辑衔接 `temporal_edit`
 
 ### J1. 镜头连续性与长度
 
@@ -320,7 +287,7 @@
 
 这些是镜头间的编辑关系，不是单个镜头的景别或运动：`hard_cut`、`match_cut`、`action_match`、`eyeline_match`、`cross_cut`、`jump_cut`、`whip_pan_transition`、`dissolve`、`fade_in`、`fade_out`、`wipe`。在数据中写入 `incoming_transition` / `outgoing_transition`，说明衔接发生在哪一侧。
 
-## 13. K 类：意图与情绪 `intent`（解释层）
+## 12. J 类：意图与情绪 `intent`（解释层）
 
 情绪和叙事意图是对镜头效果的解释，不是摄影机技术属性。建议限制为可选标签，并保留触发事件和证据：
 
@@ -337,7 +304,7 @@
 
 至少区分 `intended_effect`（导演/提示词意图）和 `observed_effect`（观看者实际读到的效果）。同一镜头可以有多个合理解释；情绪标签不应替代镜头动作描述。
 
-## 14. L 类：关联的画面与声音字段
+## 13. K 类：关联的画面与声音字段
 
 这些属性常出现在视频提示词中，但不属于镜头技术树。单独归类，避免混淆：
 
@@ -355,7 +322,7 @@
 
 风格词、情绪词和摄影机标签可以并用，但在标注数据中要放进不同字段。
 
-## 15. 可复用的单镜头标签结构
+## 14. 可复用的单镜头标签结构
 
 下面是建议的 YAML 结构。按任务只填写必要字段；未知项用 `unknown` 或留空，不要猜测。
 
@@ -383,9 +350,6 @@ camera:
     horizontal_view: three_quarter_front
   viewpoint:
     type: objective
-  composition:
-    placement: right_third
-    layout: negative_space
   motion:
     type: dolly_in
     direction: forward
@@ -412,7 +376,7 @@ intent:
   trigger: person_A recognizes the date on the letter
 ```
 
-## 16. 三个完整标注示例
+## 15. 三个完整标注示例
 
 ### 示例 A：人物读信后的情绪反应
 
@@ -422,7 +386,6 @@ framing.scale: medium_close
 subject.configuration: single
 camera.position: eye_level, three_quarter_front
 viewpoint: objective
-composition: subject_left_third, negative_space_right
 camera.motion: slow_dolly_in, small_amplitude, smooth
 subject.action: eyes move from letter to off-screen doorway; hand stops
 optics.focus: rack_focus(letter -> eyes)
@@ -438,7 +401,6 @@ framing.scale: medium_wide
 subject.configuration: two
 camera.position: low_angle toward standing_subject
 viewpoint: objective
-composition: seated_subject foreground_left; standing_subject background_right
 camera.motion: locked_off
 subject.blocking: standing_subject remains still; seated_subject looks up
 optics.focus: deep_focus
@@ -458,30 +420,28 @@ camera.motion_beats:
   - 0-2s: locked_off on empty station platform
   - 2-5s: crane_down and tilt toward the far entrance
   - 5-7s: slow dolly_in as one traveler enters frame
-composition: leading_lines toward entrance
 subject.action: traveler walks into frame and stops beneath the station clock
 temporal: single_take, 7s
 intent: reveal, anticipation
 ```
 
-## 17. 组合规则与常见错标
+## 16. 组合规则与常见错标
 
 | 错误 | 为什么不清楚 | 建议改法 |
 |---|---|---|
 | 把“全景、俯拍、推镜头、紧张”都放进一个 `shot_type` | 分别是景别、角度、运动、意图 | 拆到 `framing.scale`、`camera.position`、`camera.motion`、`intent` |
 | 把“双人镜头”当成景别 | 它表示主体数量，不表示取景范围 | 用 `subject.configuration: two`，另选景别 |
-| 把“过肩”误标成 POV | 过肩是构图安排；画面不一定代表前景人物的主观视线 | 记录 `composition.layout: over_the_shoulder`；只有模拟角色所见时才标 `viewpoint: subjective_pov` |
 | 把“POV”当成景别或运动 | POV 是观看关系，可搭配任意景别和运动 | 记录在 `viewpoint` |
 | 把“跟拍”当成唯一运动类型 | 跟拍描述摄影机与主体的关系，实际路径可能是 dolly、truck 或手持 | 分别标 `tracking_relation` 和 `camera.motion.type` |
 | 把“推镜头”与“变焦”当同义词 | 推轨改变机位和透视；变焦改变焦距 | 选择 `dolly_in/out` 或 `zoom_in/out`；需要时组合标 `dolly_zoom` |
 | 把“向上摇”和“升机”合成一个标签 | tilt 是绕机位转动，pedestal/crane 是机位移动 | 分别记录旋转与空间平移，可同时出现 |
 | 把 rack focus 写成镜头运动 | 它改变清晰焦点，不一定改变机位 | 放在 `optics.focus.mode` |
-| 把 Dutch angle 写成 roll | Dutch angle 是静态倾斜构图；roll 描述镜头在时间中的旋转 | 前者标 `camera.position.roll_orientation`，后者标 `camera.motion.type: roll_clockwise / roll_counterclockwise` |
+| 把静态倾斜画框写成动态 roll | 静态倾斜描述机位/画框状态；roll 描述镜头在时间中的旋转 | 前者标 `camera.position.roll_orientation`，后者标 `camera.motion.type: roll_clockwise / roll_counterclockwise` |
 | 把慢动作写成慢速运镜 | 慢动作改变影像时间；慢速运镜改变摄影机移动速度 | 分别标 `temporal.playback_speed` 和 `camera.motion.speed` |
 | 把“建立镜头”默认成远景 | 建立是叙事功能，景别可以不同 | `role: establishing` 与 `framing.scale` 独立标注 |
 | 把镜头间转场记为镜头运动 | 剪切/叠化发生在镜头边界，不是镜头内的摄影机轨迹 | 在 `temporal_edit.incoming/outgoing_transition` 标注 |
 
-## 18. 标注一致性检查
+## 17. 标注一致性检查
 
 - 每个标签是否只回答一个明确问题？
 - 一个字段里是否混进不同分类轴？
@@ -491,15 +451,15 @@ intent: reveal, anticipation
 - “全景”“跟拍”“主观镜头”等多义词是否按本项目定义使用？
 - 观察标签还是提示词意图？是否区分 `observed` 与 `intended`？
 - 画面里看不到或无法确定的标签，是否标为 `unknown` 而不是推断？
-- 连续视频中构图或摄影机状态发生显著变化时，是否需要拆成多个 `shot_id`？
+- 连续视频中景别、视角或摄影机状态发生显著变化时，是否需要拆成多个 `shot_id`？
 
-## 19. 参考资料
+## 18. 参考资料
 
-- [Runway — Camera Terms, Prompts, & Examples](https://help.runwayml.com/hc/en-us/articles/47313504791059-Camera-Terms-Prompts-Examples)：按景别/构图、角度、摄影机运动和焦点技术提供术语与视频生成示例。
+- [Runway — Camera Terms, Prompts, & Examples](https://help.runwayml.com/hc/en-us/articles/47313504791059-Camera-Terms-Prompts-Examples)：提供景别、摄影机角度、运动和焦点技术的术语与视频生成示例。
 - [Google DeepMind — How to Create Effective Prompts with Veo](https://deepmind.google/models/veo/prompt-guide/)：把取景/运动、风格、光线、人物、场景、动作和对白作为分开的提示要素。
-- [Google AI for Developers — Veo Prompt Guide](https://ai.google.dev/gemini-api/docs/veo)：分别列出主体、动作、风格、摄影机位置/运动、构图、焦点/镜头效果和环境氛围。
+- [Google AI for Developers — Veo Prompt Guide](https://ai.google.dev/gemini-api/docs/veo)：分别列出主体、动作、风格、摄影机位置/运动、焦点/镜头效果和环境氛围。
 - [Berklee Online — Digital Cinematography Fundamentals](https://online.berklee.edu/courses/digital-cinematography-fundamentals)：课程将镜头尺寸、机位高度、主观/客观视点、摄影机运动、光线和剪辑连续性分别教学。
-- [CICLIC — Film Analysis Vocabulary](https://vocabulaire.ciclic.fr/en)：电影分析词汇资源，分类涉及景别、角度、构图等视觉语言术语。
+- [CICLIC — Film Analysis Vocabulary](https://vocabulaire.ciclic.fr/en)：电影分析词汇资源，可对照景别、角度等视觉语言术语。
 - [MiniMax H3 — Official Video Prompt Writing Guide](https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_base_en.md)：将镜头、机位运动、幅度、速度和时间段放入独立的提示描述中。
 
 ---
