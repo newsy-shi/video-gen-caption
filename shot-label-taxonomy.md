@@ -58,12 +58,11 @@
 | `master` 主镜头 | 覆盖整个场景或主要表演段落，常作为剪辑覆盖基础 | 它可以是中景、全景或运动长镜头；“长镜头”强调连续时间，不等于主镜头 |
 | `coverage` 覆盖镜头 | 为场景提供可剪辑的补充视角或表演覆盖 | 这是制作/剪辑功能，不是景别或机位类型 |
 | `reaction` 反应镜头 | 以人物对事件的反应为主要信息 | 反应镜头常为近景，但也能以远景呈现群体反应 |
-| `insert` 插入镜头 | 插入关键物件、手部或文字等细节信息 | 更偏叙事功能；常用特写，但不等同于特写 |
-| `cutaway` 插入/旁切镜头 | 暂时离开当前主要动作，显示相关物件、环境或旁观者 | 可用于交代信息、转场或延缓动作，不固定景别 |
-| `transition` 转场镜头 | 主要用于连接时间、地点、段落或状态变化 | 标签记录剪辑意图；具体剪辑手法另标 `edit.transition` |
-| `pick_up` 动作补拍 | 从已开始的动作中途接入，补充动作覆盖 | 是制作覆盖类型，不是镜头运动类型 |
+| `insert` 插入镜头 | 切出关键物件、手部或文字等局部细节，通常直接提供信息 | 重点是“细节信息镜头”；常用特写，但不等同于特写 |
+| `cutaway` 旁切镜头 | 暂时离开当前主要动作，显示相关环境、旁观者或另一处同时发生的事 | 重点是“离开当前动作”；可交代空间、转场或延缓动作，不固定景别 |
+| `transition` 转场镜头 | 主要用于连接时间、地点、段落或状态变化 | 标签记录剪辑意图；具体剪辑手法另标 `temporal_edit.incoming_transition / outgoing_transition` |
 
-一个镜头可以有一个主要 `role` 和零至两个次要功能。除非有明确理由，避免把 `establishing`、`reaction`、`insert` 等所有可能功能全贴上去。
+一个镜头可以有一个主要 `role` 和零至两个次要功能。除非有明确理由，避免把 `establishing`、`reaction`、`insert` 等所有可能功能全贴上去。`insert` 与 `cutaway` 若同时成立，按主要叙事用途标一个主标签，另一个可作为次要功能。
 
 ## 4. B 类：景别与取景范围 `framing.scale`
 
@@ -83,10 +82,10 @@
 
 ### 景别标注规则
 
-- 多人画面按**主要叙事主体**判定尺度，并在 `subject_reference` 写清人物/对象。例如 `medium + subject_reference: two_people`。
-- 人物头脚是否完整属于取景边界；人物在画面里大小属于景别。必要时另加 `framing.crop: head_cut / feet_cut / full_body`。
+- 多人画面按**主要叙事主体**判定尺度，并在 `subject_reference` 写清参照主体，如 `person` 人物、`two_people` 两人、`object` 物件、`environment` 环境。例如 `medium + subject_reference: two_people`。
+- 人物头脚是否完整属于取景边界；人物在画面里大小属于景别。必要时另加 `framing.crop`：`head_cut` 切掉头部、`feet_cut` 切掉脚部、`full_body` 全身完整入画。
 - “远景/全景/大全景”在不同团队和地区叫法并不完全统一。项目应固定一套词表，并在样例中定义，不要混用别名。
-- `shot_scale` 不标主体数量；“双人镜头”请标在 `subject.configuration`。
+- `framing.scale` 不标主体数量；“双人镜头”请标在 `subject.configuration`。
 
 ## 5. C 类：主体配置 `subject.configuration`
 
@@ -101,7 +100,7 @@
 | `multiple_objects` | 多个物件共同构成主要主体 |
 | `environment_only` | 无明确人物主体，主要呈现环境/空间 |
 
-另加可选字段：`primary_subject_id`、`secondary_subject_ids`、`subject_count_visible`、`subject_count_implied`。如果画面里人物很多但只有一人是焦点，配置标 `large_group`，同时指定主主体 ID，不能只靠 `single` 表达“主角突出”。
+另加可选字段：`primary_subject_id`（主要主体编号）、`secondary_subject_ids`（次要主体编号列表）、`subject_count_visible`（可见主体数量）、`subject_count_implied`（画外但明确存在的主体数量）。如果画面里人物很多但只有一人是焦点，配置标 `large_group`，同时指定主主体 ID，不能只靠 `single` 表达“主角突出”。
 
 ## 6. D 类：机位与拍摄角度 `camera.position`
 
@@ -114,9 +113,10 @@
 | `eye_level` 平视 | 镜头大致与主体眼睛同高 |
 | `low_angle` 仰角 | 镜头低于主体，朝上拍 |
 | `high_angle` 俯角 | 镜头高于主体，朝下拍 |
+| `high_oblique` 斜俯视 | 从主体上方以明显斜角向下看；不同于近乎垂直的顶视 |
 | `overhead` 顶视 | 近乎垂直向下，观察主体上方平面 |
 | `undershot` 极低仰视 | 摄影机贴近地面或主体下方，强烈向上看 |
-如角度需要精确，可写 `vertical_angle_degrees`，例如 `-25` 表示轻微仰视；必须在项目内统一正负号约定。
+如角度需要精确，可写 `vertical_angle_degrees`。本文件约定正值为镜头光轴向上（仰视），负值为光轴向下（俯视），例如 `+25` 表示仰视约 25°、`-25` 表示俯视约 25°；项目采用其他坐标约定时必须明确说明。
 
 ### D2. 水平朝向 `horizontal_view`
 
@@ -127,11 +127,10 @@
 | `profile` 侧面 | 主要呈现主体侧面轮廓 |
 | `three_quarter_rear` 后侧/四分之三背面 | 摄影机看到主体背面与一侧 |
 | `rear` 背面 | 摄影机位于主体后方 |
-| `overhead_directional` 斜顶视 | 从上方斜向观察；若接近垂直向下用 `overhead` |
 
 这里描述**静态视角**。摄影机在镜头中从正面绕到侧面时，应在 `camera.motion.path_description` 写弧线/环绕，而不是把多个水平角度当作同一个静态标签。
 
-### D3. 摄影机高度 `camera_height`
+### D3. 摄影机高度 `height`
 
 | 标签 | 定义 |
 |---|---|
@@ -169,52 +168,54 @@
 
 将运动分为**空间平移、机位旋转、镜头焦距变化、复合路径**；稳定方式另列。`tracking` 是跟随主体的关系，也应与实际路径分开。
 
-### G1. 运动类别与规范标签 `type`
+### F1. 运动类别与规范标签 `type`
 
 | 运动类别 | 规范标签 | 定义 |
 |---|---|---|
-| 静止 | `locked_off` | 摄影机位置和朝向固定 |
-| 轴向平移 | `dolly_in` / `dolly_out` | 摄影机沿主体视线方向靠近/远离 |
-| 横向平移 | `truck_left` / `truck_right` | 摄影机在空间中向左/右移动 |
-| 垂直平移 | `pedestal_up` / `pedestal_down` | 摄影机整体垂直升/降 |
-| 水平旋转 | `pan_left` / `pan_right` | 机位大致不变，向左/右摇摄 |
-| 垂直旋转 | `tilt_up` / `tilt_down` | 机位大致不变，向上/下俯仰 |
-| 光轴旋转 | `roll_clockwise` / `roll_counterclockwise` | 摄影机围绕镜头轴滚转 |
-| 焦距变化 | `zoom_in` / `zoom_out` | 机位基本不变，焦距变化 |
-| 弧线路径 | `arc_left` / `arc_right` | 摄影机沿主体周边部分圆弧移动 |
-| 环绕路径 | `orbit_left` / `orbit_right` | 摄影机绕主体运动；角度需另写 |
-| 垂直弧线 | `crane_up` / `crane_down` | 摄影机沿较大垂直/弧形轨迹升降 |
-| 快速摇摄 | `whip_pan_left` / `whip_pan_right` | 快速水平摇摄，常伴运动模糊 |
-| 复合变焦 | `dolly_zoom_in` / `dolly_zoom_out` | 推轨与反向变焦同时发生 |
-| 不规则运动 | `handheld_motion` | 机位带有人为手持的不规则修正和晃动 |
+| 静止 | `locked_off` | 摄影机位置和朝向固定；即使画面有微小震动，路径仍可标静止，稳定感另标 |
+| 轴向平移 | `dolly_in` 推轨靠近 / `dolly_out` 推轨远离 | 摄影机沿主体视线方向靠近/远离 |
+| 横向平移 | `truck_left` 向左横移 / `truck_right` 向右横移 | 摄影机在空间中向左/右平移 |
+| 垂直平移 | `pedestal_up` 升机 / `pedestal_down` 降机 | 摄影机整体垂直升/降 |
+| 水平旋转 | `pan_left` 向左摇 / `pan_right` 向右摇 | 机位大致不变，水平转动镜头朝向 |
+| 垂直旋转 | `tilt_up` 上摇 / `tilt_down` 下摇 | 机位大致不变，垂直转动镜头朝向 |
+| 光轴旋转 | `roll_clockwise` 顺时针滚转 / `roll_counterclockwise` 逆时针滚转 | 摄影机围绕镜头轴旋转 |
+| 焦距变化 | `zoom_in` 变焦拉近 / `zoom_out` 变焦拉远 | 机位基本不变，通过改变焦距改变视角和主体画面大小 |
+| 弧线路径 | `arc_left` 向左走弧线 / `arc_right` 向右走弧线 | 摄影机沿主体周边的部分圆弧移动，通常不到完整一圈 |
+| 环绕路径 | `orbit_left` 向左环绕 / `orbit_right` 向右环绕 | 摄影机以主体为中心沿圆弧或圆周移动；不一定转满 360°，具体角度另写 |
+| 垂直弧线 | `crane_up` 摇臂升起 / `crane_down` 摇臂下降 | 摄影机沿较大垂直/弧形轨迹升降 |
+| 快速摇摄 | `whip_pan_left` 快速向左摇 / `whip_pan_right` 快速向右摇 | 快速水平摇摄，常伴运动模糊 |
+| 复合变焦 | `dolly_zoom` | 推轨与反向变焦同时发生；移动方向和变焦方向分别记录 |
+| 不规则运动 | `handheld_motion` 手持式不规则运动 | 摄影机呈现不规则移动/修正；实际是否手持设备另记在支撑方式 |
+
+`dolly_zoom`（希区柯克变焦/滑动变焦）指摄影机平移与反向变焦同步发生，通常尽量维持主体画面大小，同时让背景透视尺度明显变化。单写“in/out”容易混淆摄影机方向、变焦方向和主体大小，因此应另写 `dolly_direction`（`in` 向主体靠近、`out` 远离主体）与 `zoom_direction`（`in` 焦距变长/画面拉近、`out` 焦距变短/画面拉远）。
 
 方向字段应统一采用“摄影机自身方向”，并给团队明确坐标约定。例如 `truck_left` 表示镜头从摄影机视角向左横移，不代表主体在屏幕上向左移动。
 
-### G2. 跟随关系 `tracking_relation`
+### F2. 跟随关系 `tracking_relation`
 
-- `none` 不跟随主体
-- `follow_from_front` 正面倒退跟随
-- `follow_from_rear` 后方跟随
-- `follow_profile` 侧面平行跟随
-- `lead` 摄影机在前方引导主体
-- `reframe_to_subject` 主体在动，摄影机调整画框或朝向以保持主体可见
-- `independent` 摄影机按自身路线移动，不依主体运动
+- `none` 不跟随主体，主体离开画面时摄影机不追随
+- `follow_from_front` 摄影机在主体前方、朝向主体并倒退移动，维持正面跟随
+- `follow_from_rear` 摄影机在主体后方同向移动，维持背后跟随
+- `follow_profile` 摄影机与主体大致平行移动，保持侧面跟随
+- `lead` 摄影机在主体行进方向前方移动，引导观众看向前方路线或目的地；是否正对主体另写朝向
+- `reframe_to_subject` 主体移动时摄影机主要通过摇摄/轻微调整朝向重新取景，机位不一定跟着平移
+- `independent` 摄影机按预设路线移动，路线不以跟随主体为目的
 
 跟拍方向不是 `dolly` 的同义词。正面跟拍通常是摄影机倒退，侧面跟拍通常是 truck，背后跟拍可以用 dolly、稳定器或车辆拍摄；如需表达几何路径，把它们分别标注。
 
-### G3. 运动参数 `parameters`
+### F3. 运动参数 `parameters`
 
-- `speed`：摄影机路径的移动速度，可标 `very_slow / slow / medium / fast / very_fast`。尽可能写可观察的参照，如“3 秒横移约 2 米”；仅写 `slow` 时，应按项目统一的主观等级理解。它不等于主体动作速度，也不等于慢动作。
-- `acceleration`：运动速度随时间的变化，可标 `constant / ease_in / ease_out / ease_in_out / accelerate / decelerate / abrupt_start / abrupt_stop`。`ease_in` 表示由慢到快的平滑起步，`ease_out` 表示逐渐减速；若只是短促的起停，用 `abrupt_start/stop`。
-- `amplitude`：运动覆盖的空间范围或旋转角度，不是速度。按类型补充角度、距离或高度：摇摄可写 `pan_degrees: 90`，环绕可写 `orbit_degrees: 180`，平移可写 `travel_distance_m: 1.5`，升降可写 `vertical_travel_m: 2`。粗略分级可用 `subtle / small / medium / large / full_360`，并在项目内校准边界。
-- `stability`：成片中可见的机位稳定程度，可标 `locked / smooth / stabilized / lightly_handheld / shaky / chaotic`。它描述画面观感，不代表用了哪种器材；例如云台也可能因快速运动呈现明显抖动。
+- `speed`：摄影机路径的移动速度，可标 `very_slow` 极慢、`slow` 慢、`medium` 中等、`fast` 快、`very_fast` 极快。尽可能写可观察的参照，如“3 秒横移约 2 米”；仅写等级时，应按项目统一的主观尺度理解。它不等于主体动作速度，也不等于慢动作。
+- `acceleration`：运动速度随时间的变化。`constant` 匀速；`ease_in` 平滑加速起步；`ease_out` 平滑减速收尾；`ease_in_out` 两端缓、中段快；`accelerate` 持续加速；`decelerate` 持续减速；`abrupt_start` 突然起动；`abrupt_stop` 突然停止。它们描述运动曲线，不表示移动方向。
+- `amplitude`：运动覆盖的空间范围或旋转角度，不是速度。粗略等级为 `subtle` 几乎难以察觉、`small` 小幅、`medium` 中等、`large` 大幅、`full_360` 完整旋转一周；应在项目内校准边界，并优先补充具体量值：摇摄 `pan_degrees: 90`、环绕 `orbit_degrees: 180`、平移 `travel_distance_m: 1.5`、升降 `vertical_travel_m: 2`。`full_360` 只适用于旋转/环绕，不适用于直线移动。
+- `stability`：成片中可见的机位稳定程度。`locked` 画面无可见机位抖动；`smooth` 连贯平顺；`stabilized` 有明显稳定处理/稳定器观感；`lightly_handheld` 有轻微自然手持浮动；`shaky` 明显抖动；`chaotic` 强烈、难以预测的晃动。它描述画面观感，不代表用了哪种器材。
 - `duration_seconds`：该段摄影机运动持续时间，不一定等于整条镜头时长。若整条镜头 8 秒、其中推轨 3 秒，可记录 `shot_duration_seconds: 8` 与 `camera.motion.duration_seconds: 3`。
 - `start_state` / `end_state`：运动开始和结束时的机位、朝向或景别，例如 `wide, eye_level` → `close, eye_level`。景别变化若由主体靠近造成，应记录主体运动，不能仅凭景别变化推断摄影机在动。
 - `path_description`：受控标签无法完整表达时，用一句话说明三维路线、绕行对象、方向基准和终点，例如“从人物右后方起步，顺时针绕行约 120°，停在正面中近景”。
 
 **标注顺序：**先确定 `type`（做什么运动），再定 `tracking_relation`（是否跟随谁），最后补速度、幅度、加减速、稳定感和持续时间。只有确实可观察或提示词明确要求的参数才填写；未知值留空或标 `unknown`，避免从结果反推器材或精确数据。
 
-**分段运动：**一条镜头内运动方向、速度或类型发生明显变化时，按时间顺序写 `motion_beats`，每段沿用相同字段结构。比如 `0–2s locked_off`、`2–5s slow dolly_in / ease_in`、`5–6s abrupt_stop`。不要把互相冲突的速度和方向堆在同一字段，也不要用一个平均速度抹掉有意义的节拍。
+**分段运动：**一条镜头内运动方向、速度或类型发生明显变化时，按时间顺序写 `camera.motion.beats`，每段沿用相同字段结构。同时发生的复合运动可用 `types` 列表记录；不同阶段则拆成多个 beat。不要把互相冲突的速度和方向堆在同一字段，也不要用一个平均速度抹掉有意义的节拍。
 
 ```yaml
 camera:
@@ -234,94 +235,90 @@ camera:
 
 示例中的 `orbit_left` 是路径类型，`independent` 表示路线不依赖主体移动，`slow` 和 `120°/4s` 是速度与幅度信息；这些字段不能互相替代。
 
-### G4. 支撑方式 `camera_support`
+### F4. 支撑方式 `camera_support`
 
 `camera_support` 记录实际或提示词指定的支撑设备/拍摄平台。它回答“摄影机由什么支撑或搭载”，不回答“摄影机往哪里走”；路线写在 `camera.motion.type/path_description`，最终稳定感写在 `camera.motion.stability`。
 
 | 类别 | 标签 | 使用说明 |
 |---|---|---|
-| 固定支撑 | `tripod`、`monopod` | 三脚架通常支持固定机位和摇/俯仰；独脚架可移动但稳定性有限。`tripod` 不必然等于 `locked_off`，也可以配合云台摇摄 |
-| 轨道/滑动 | `dolly_rig`、`slider` | 支持平顺的直线移动；具体方向、距离仍由运动路径字段标注 |
-| 摇臂/升降 | `jib_crane` | 支持较大幅度升降或弧线升降；短小机臂也可只做轻微垂直移动 |
-| 稳定器 | `steadicam`、`gimbal` | 适合行走、跟拍和复杂移动。Steadicam 与电子云台的结构不同，但提示词只要求稳定移动时可统称为稳定器风格；不要仅凭画面平滑就断定使用了哪一种 |
-| 手持/肩扛 | `handheld`、`shoulder_rig` | 可静止持机，也可跟拍；分别记录路径和抖动程度。肩扛常有身体传递的细微起伏，但不等于必然剧烈摇晃 |
-| 身体/主观搭载 | `body_mount`、`helmet_mount` | 摄影机固定在身体或头盔上，常用于第一人称运动镜头；只有画面确实模拟角色所见时，才另标 `viewpoint: subjective_pov` |
-| 车辆/移动平台 | `vehicle_rig`、`car_mount`、`process_trailer` | 摄影机固定在车辆或移动平台上；车辆行驶路线与摄影机相对车辆的运动要分清 |
-| 空中/索道 | `drone`、`helicopter_rig`、`cable_cam` | 记录空中或索道平台；“航拍”是拍摄位置/方式描述，不足以单独说明镜头是否平移、升降或环绕 |
-| 程序化控制 | `motion_control_rig`、`robotic_arm` | 可重复、精确控制的路径，常用于合成、产品和特效拍摄；具体运动仍按路径字段记录 |
+| 固定支撑 | `tripod` 三脚架、`monopod` 独脚架 | 三脚架通常支持固定机位和摇/俯仰；独脚架可移动但稳定性有限。`tripod` 不必然等于 `locked_off`，也可以配合云台摇摄 |
+| 轨道/滑动 | `dolly_rig` 轨道推车、`slider` 短滑轨 | 支持平顺的直线移动；具体方向、距离仍由运动路径字段标注 |
+| 摇臂/升降 | `jib_crane` 摄影摇臂/小型升降臂 | 支持较大幅度升降或弧线升降；短小机臂也可只做轻微垂直移动 |
+| 稳定器 | `steadicam` 机械稳定器、`gimbal` 电子云台 | 适合行走、跟拍和复杂移动。Steadicam 与电子云台的结构不同，但提示词只要求稳定移动时可统称为稳定器风格；不要仅凭画面平滑就断定使用了哪一种 |
+| 手持/肩扛 | `handheld` 手持、`shoulder_rig` 肩扛支撑 | 可静止持机，也可跟拍；分别记录路径和抖动程度。肩扛常有身体传递的细微起伏，但不等于必然剧烈摇晃 |
+| 身体/主观搭载 | `body_mount` 身体固定、`helmet_mount` 头盔固定 | 摄影机固定在身体或头盔上，常用于第一人称运动镜头；只有画面确实模拟角色所见时，才另标 `viewpoint: subjective_pov` |
+| 车辆/移动平台 | `vehicle_rig` 车辆搭载、`car_mount` 车载固定、`process_trailer` 拍摄拖车/移动平台 | 摄影机固定在车辆或移动平台上；车辆行驶路线与摄影机相对车辆的运动要分清 |
+| 空中/索道 | `drone` 无人机、`helicopter_rig` 直升机搭载、`cable_cam` 索道摄像机 | 记录空中或索道平台；“航拍”是拍摄位置/方式描述，不足以单独说明镜头是否平移、升降或环绕 |
+| 程序化控制 | `motion_control_rig` 程序化运动控制装置、`robotic_arm` 机械臂 | 可重复、精确控制的路径，常用于合成、产品和特效拍摄；具体运动仍按路径字段记录 |
 
-允许组合记录多个支撑方式，例如 `dolly_rig + motion_control_rig`。推荐字段可写 `camera.support.primary` 和 `camera.support.secondary`；若只想描述生成视频的观感而不知道真实设备，写 `support: unknown`，把“平滑跟随”“肩扛晃动”等放入 `stability` 或提示词风格描述。
+允许组合记录多个支撑方式，例如 `dolly_rig + motion_control_rig`。推荐字段可写 `camera.support.primary` 和 `camera.support.secondary`；若只想描述生成视频的观感而不知道真实设备，写 `camera.support.primary: unknown`，把“平滑跟随”“肩扛晃动”等放入 `camera.motion.stability` 或提示词风格描述。
 
-**区分示例：**`gimbal + truck_right + follow_profile + smooth` 表示云台支撑、向右横移、侧向跟随且画面平滑；`handheld + locked_off + lightly_handheld` 表示手持支撑但没有明确路径，画面保留轻微自然晃动；无人机垂直上升应记录为 `support: drone` 加 `motion.type: pedestal_up`，不能把 `drone` 当成运动标签。
+**区分示例：**`gimbal + truck_right + follow_profile + smooth` 表示电子云台支撑、向右横移、侧向跟随且画面平滑；`handheld + locked_off + lightly_handheld` 表示手持、无明确路径、画面保留轻微自然晃动；无人机垂直上升应记录为 `camera.support.primary: drone` 加 `camera.motion.type: pedestal_up`，不能把 `drone` 当成运动标签。
 
 ## 9. G 类：主体运动与场面调度 `subject.action`
 
 这一轴只描述画面中人物、动物和物件的变化，不描述摄影机如何移动。
 
-### H1. 主体动作 `action_type`
+### G1. 主体动作 `action_type`
 
-- `stationary` 静止/保持姿势
-- `gesture` 手势、面部微动作
-- `body_action` 坐、站、转身、弯腰、跳跃等
-- `locomotion` 行走、奔跑、爬行、飞行、车辆移动
-- `interaction` 人物/物件之间的交互
-- `transformation` 形态/状态变化
-- `environmental_motion` 风、雨、烟、火、水流等环境运动
+- `stationary` 静止或保持姿势，没有明显主动动作
+- `gesture` 手势、表情及局部微动作，如挥手、皱眉、眨眼
+- `body_action` 身体姿态变化，如坐下、站起、转身、弯腰、跳跃
+- `locomotion` 主体位置发生移动，如行走、奔跑、爬行、飞行或车辆行进
+- `interaction` 主体之间或主体与物件之间发生作用，如拥抱、推门、拿起杯子
+- `transformation` 主体形态或状态改变，如融化、变形、由明转暗
+- `environmental_motion` 环境元素自身运动，如风吹树叶、降雨、烟雾、火焰、水流
 
-### H2. 路径、方向和节拍
+### G2. 路径、方向和节拍
 
-为主要主体写 `direction`、`path`、`speed`、`start_state`、`end_state`，并可拆成 `beats`。示例：`A 从画面左侧走入 → 在桌边停下 → 拿起杯子 → 看向窗外`。屏幕方向（画面左/右）要和空间方向（朝门口/远离摄影机）区分。
+为主要主体写 `direction`（移动方向）、`path`（经过路线）、`speed`（主体自身速度）、`start_state`（起始姿势/位置）、`end_state`（结束姿势/位置），并可拆成 `beats`（有序动作节拍）。示例：`A 从画面左侧走入 → 在桌边停下 → 拿起杯子 → 看向窗外`。屏幕方向（画面左/右）要和空间方向（朝门口/远离摄影机）区分；这些字段描述主体，摄影机速度另记在 `camera.motion`。
 
-### H3. 场面调度 `blocking`
+### G3. 场面调度 `blocking`
 
-记录主体在场景中的位置、相互距离、视线和遮挡关系：`screen_position`、`depth_plane`、`eyeline_target`、`facing_direction`、`relative_position_to`、`enters_frame`、`exits_frame`。场面调度描述人如何在空间里移动；摄影机路径仍写在 `camera.motion`。
+记录主体在场景中的位置、相互距离、视线和遮挡关系：`screen_position` 画面左右/上下位置；`depth_plane` 前景/中景/背景层；`eyeline_target` 视线目标；`facing_direction` 身体朝向；`relative_position_to` 相对另一主体或物件的位置；`enters_frame` 入画时机/方向；`exits_frame` 出画时机/方向。场面调度描述主体如何在空间里移动；摄影机路径仍写在 `camera.motion`。
 
 ## 10. H 类：镜头、焦点与景深 `optics`
 
-### I1. 焦距观感 `focal_length_look`
+### H1. 焦距观感 `focal_length_look`
 
-以观感标签优先，具体毫米数作为可选参数：`ultra_wide`、`wide`、`normal`、`long_lens`、`telephoto`、`macro`。广角/长焦描述视角和透视观感；`close_up` 描述景别，不能互相替代。写“85mm”时需说明传感器/画幅或只把它当作大致风格参考。
+以观感标签优先，具体毫米数作为可选参数：`ultra_wide` 超广角、视野很宽且近处透视夸张；`wide` 广角、视野宽并呈现明显空间纵深；`normal` 标准视角、透视观感接近常规人眼观看；`long_lens` 长焦观感、视角窄且远近空间显得压缩；`telephoto` 强长焦、背景压缩和远距离取景特征更明显；`macro` 微距成像、用于极近距离细节。广角/长焦描述视角和透视观感；`close_up` 描述景别，不能互相替代。具体观感会受传感器尺寸和拍摄距离影响；写“85mm”时需说明画幅或只把它当作大致风格参考。
 
-### I2. 对焦状态 `focus.mode`
+### H2. 对焦状态 `focus.mode`
 
-- `single_subject_focus` 单一主体清晰
-- `selective_focus` 选择性浅焦
-- `deep_focus` 前中后景均清晰
-- `soft_focus` 柔焦/整体不锐
-- `rack_focus` 焦点在镜头内从一个对象/距离转到另一个
-- `focus_pull_to_subject` 焦点拉到指定主体
-- `focus_hold` 焦点保持不变
-- `focus_breathing_visible` 可见呼吸效应（只在明确需要时）
+- `single_subject_focus` 单一主体清晰，其他主体可虚化
+- `selective_focus` 选择性对焦，焦点范围较浅，用清晰/模糊关系突出目标
+- `deep_focus` 深焦，近中远多个景深层次都保持可辨清晰
+- `soft_focus` 柔焦，整体边缘柔和，不等同于失焦
+- `rack_focus` 镜头内把焦点从一个对象/距离转移到另一个
+- `focus_pull_to_subject` 明确把焦点拉到指定主体；宜同时写明焦点起点和终点
+- `focus_hold` 一个镜头段内持续保持焦点目标不变
+- `focus_breathing_visible` 对焦时视角/画面倍率变化明显可见，仅在需要表现镜头呼吸时使用
 
-另设 `focus_start_target`、`focus_end_target`、`depth_of_field: shallow / medium / deep`。rack focus 是**清晰面切换**，不是摄影机转向或景别变化。
+另设 `focus_start_target`（起始焦点目标）、`focus_end_target`（结束焦点目标）、`depth_of_field`（景深范围：`shallow` 浅景深、`medium` 中等景深、`deep` 深景深）。rack focus 是**清晰面切换**，不是摄影机转向或景别变化。
 
-### I3. 光学/成像特征 `image_character`
+### H3. 光学/成像特征 `image_character`
 
-可选标签：`bokeh`、`lens_flare`、`motion_blur`、`distortion`、`vignette`、`chromatic_aberration`、`anamorphic_streak`、`film_grain`、`shutter_smear`。这是镜头呈现特征，不属于摄影机运动；同时要区别后期视觉效果与物理镜头效果。
+可选标签：`bokeh` 焦外光斑/虚化形状；`lens_flare` 镜头眩光；`motion_blur` 运动模糊，可能来自主体/摄影机运动与较慢快门；`distortion` 镜头几何畸变；`vignette` 画面边缘变暗；`chromatic_aberration` 色差/边缘彩边；`anamorphic_streak` 变形宽银幕镜头常见的水平拉丝眩光；`film_grain` 胶片颗粒质感；`shutter_smear` 快速运动在较长曝光下形成的拖影。它们是镜头/成像特征，不属于摄影机运动；同时要区别后期效果与物理镜头效果。
 
 ## 11. I 类：时间、镜头长度与剪辑衔接 `temporal_edit`
 
-### J1. 镜头连续性与长度
+### I1. 镜头连续性、播放状态与长度
 
-- `single_take` 单次连续拍摄/生成
-- `long_take` 相对较长、保持连续的镜头（项目需自定时长门槛）
-- `short_insert` 短插入镜头
-- `duration_seconds` 明确时长
-- `real_time` 实时
-- `slow_motion` 慢动作
-- `fast_motion` 快动作
-- `time_lapse` 延时
-- `freeze_frame` 定格
+建议分成三个字段，避免把镜头连续性、播放速度和长度混在一个枚举中：
+
+- `continuity`：`single_take` 单次连续拍摄/生成，中间没有可见剪切；`long_take` 相对较长且保持连续的镜头（项目需自定时长门槛）。
+- `playback_mode`：`real_time` 实时播放，影像速度接近场景实际时间；`slow_motion` 慢动作，播放比拍摄/场景实际时间更慢；`fast_motion` 快动作，播放比实际时间更快；`time_lapse` 延时摄影效果，长时间变化压缩至较短播放时间；`freeze_frame` 定格画面，在一段时间内不继续变化。
+- `duration_seconds`：镜头或片段的实际时长，需说明单位，并与摄影机运动时长区分。
 
 “长镜头”没有跨作品统一的秒数界限，标注库应规定本项目阈值；“单镜头生成”也不一定等于长镜头。
 
-### J2. 镜头内部时间组织 `beat_timing`
+### I2. 镜头内部时间组织 `beat_timing`
 
-用时间点或比例描述运动/事件发生位置，例如 `0–2s hold; 2–5s dolly_in; 5–6s settle`。时间节拍属于镜头内部组织；如果发生了剪切，应开始一个新 `shot_id`。
+用时间点或比例描述运动/事件发生位置，例如 `0–2s hold（保持）；2–5s dolly_in（推轨靠近）；5–6s settle（减速停稳）`。时间节拍属于镜头内部组织；如果发生了剪切，应开始一个新 `shot_id`。
 
-### J3. 剪辑衔接 `edit.transition`
+### I3. 剪辑衔接 `temporal_edit.incoming_transition / outgoing_transition`
 
-这些是镜头间的编辑关系，不是单个镜头的景别或运动：`hard_cut`、`match_cut`、`action_match`、`eyeline_match`、`cross_cut`、`jump_cut`、`whip_pan_transition`、`dissolve`、`fade_in`、`fade_out`、`wipe`。在数据中写入 `incoming_transition` / `outgoing_transition`，说明衔接发生在哪一侧。
+这些是镜头间的编辑关系，不是单个镜头的景别或运动：`hard_cut` 硬切，直接切到下一镜头；`match_cut` 匹配剪辑，利用形状、动作或声音相似性连接镜头；`action_match` 动作匹配切，动作跨切点连续；`eyeline_match` 视线匹配切，按人物视线切到其所看对象；`cross_cut` 交叉剪辑，在不同地点/行动线之间来回切换；`jump_cut` 跳切，在相近景别与机位关系中跳过部分时间；`whip_pan_transition` 快摇转场，以快速摇摄运动模糊衔接；`dissolve` 叠化，一镜渐隐同时另一镜渐显；`fade_in` 淡入，从黑场/空场渐显；`fade_out` 淡出，渐隐至黑场/空场；`wipe` 划像，以边界扫过画面替换镜头。`incoming_transition` 表示本镜头前的入场衔接，`outgoing_transition` 表示本镜头后的出场衔接。
 
 ## 12. J 类：意图与情绪 `intent`（解释层）
 
@@ -331,11 +328,13 @@ camera:
 - `isolation` 孤立
 - `tension` 紧张
 - `reveal` 揭示
+- `realization` 意识到关键信息后的顿悟/确认
+- `anticipation` 对即将发生之事的期待或预感
 - `disorientation` 失衡/眩晕
 - `dominance` 支配/权力
 - `vulnerability` 脆弱
 - `immersion` 沉浸
-- `scale` 规模感
+- `sense_of_scale` 规模感，强调人物/物件与环境之间的巨大或渺小关系，避免与景别字段 `framing.scale` 混淆
 - `comic_emphasis` 喜剧重音
 
 至少区分 `intended_effect`（导演/提示词意图）和 `observed_effect`（观看者实际读到的效果）。同一镜头可以有多个合理解释；情绪标签不应替代镜头动作描述。
@@ -346,9 +345,9 @@ camera:
 
 | 字段 | 示例值 |
 |---|---|
-| `lighting` 光线 | `soft_window_light`、`backlight`、`hard_key`、`low_key` |
-| `color_palette` 色彩 | `warm_amber`、`cool_blue`、`desaturated` |
-| `visual_style` 风格 | `live_action`、`documentary`、`anime`、`stop_motion`、`film_noir` |
+| `lighting` 光线 | `soft_window_light` 柔和窗光、`backlight` 逆光、`hard_key` 硬主光、`low_key` 低调布光/暗部占主导 |
+| `color_palette` 色彩 | `warm_amber` 暖琥珀色、`cool_blue` 冷蓝色、`desaturated` 低饱和 |
+| `visual_style` 风格 | `live_action` 真人实拍、`documentary` 纪录片风格、`anime` 动画、`stop_motion` 定格动画、`film_noir` 黑色电影风格 |
 | `sound.dialogue` 对白 | 说话者 ID、台词、时机 |
 | `sound.ambience` 环境声 | 雨声、室内底噪、街道人声 |
 | `sound.sfx` 音效 | 关门、脚步、碰撞 |
@@ -360,7 +359,8 @@ camera:
 
 ## 14. 可复用的单镜头标签结构
 
-下面是建议的 YAML 结构。按任务只填写必要字段；未知项用 `unknown` 或留空，不要猜测。
+下面是建议的 YAML 结构。按任务只填写必要字段；未知项用 `unknown`（未知/无法判定）或留空，不要猜测。
+其中 `shot_id` 是镜头编号，`scope.scene_id` 和 `scope.sequence_id` 分别是场景编号与段落编号；字段采用前文定义的分轴标签。
 
 ```yaml
 shot_id: S01_SH03
@@ -377,8 +377,8 @@ subject:
   primary_subject_id: person_A
   action_type: gesture
   action_beats:
-    - looks_down_at_letter
-    - hand_stops_moving
+    - looks_down_at_letter # 看向信件
+    - hand_stops_moving # 手部动作停止
 camera:
   position:
     height: eye_level
@@ -388,14 +388,15 @@ camera:
     type: objective
   motion:
     type: dolly_in
-    direction: forward
     speed: slow
     acceleration: ease_in
     amplitude: small
     tracking_relation: independent
     stability: smooth
     duration_seconds: 3
-    end_state: face_closeup
+    end_state: face_closeup # 面部特写
+  support:
+    primary: unknown
 optics:
   focal_length_look: normal
   depth_of_field: shallow
@@ -406,59 +407,121 @@ optics:
 temporal_edit:
   duration_seconds: 5
   continuity: single_take
+  playback_mode: real_time
   beat_timing: "0-1s hold; 1-4s dolly_in with focus shift; 4-5s settle"
 intent:
   intended_effect: realization
-  trigger: person_A recognizes the date on the letter
+  trigger: person_A认出信件上的日期
 ```
 
 ## 15. 三个完整标注示例
 
 ### 示例 A：人物读信后的情绪反应
 
-```text
-role: reaction
-framing.scale: medium_close
-subject.configuration: single
-camera.position: eye_level, three_quarter_front
-viewpoint: objective
-camera.motion: slow_dolly_in, small_amplitude, smooth
-subject.action: eyes move from letter to off-screen doorway; hand stops
-optics.focus: rack_focus(letter -> eyes)
-temporal: single_take, 6s
-intent: tension, realization
+```yaml
+role:
+  primary: reaction
+framing:
+  scale: medium_close
+subject:
+  configuration: single
+  action: eyes move from the letter to the doorway; hand stops # 视线从信件移向门口，手停住
+camera:
+  position:
+    height: eye_level
+    vertical_angle: eye_level
+    horizontal_view: three_quarter_front
+  viewpoint:
+    type: objective
+  motion:
+    type: dolly_in
+    speed: slow
+    amplitude: small
+    stability: smooth
+optics:
+  focus:
+    mode: rack_focus
+    start_target: letter # 信件
+    end_target: person_A_eyes # 人物A的眼睛
+temporal_edit:
+  continuity: single_take
+  duration_seconds: 6
+  beat_timing: "0-2s hold（保持）；2-5s dolly_in（推轨靠近）并 rack_focus（焦点转移）；5-6s settle（停稳）"
+intent:
+  intended_effect: tension
+  observed_effect: realization
+  trigger: person_A认出信件上的日期
 ```
 
 ### 示例 B：两人对话中的权力关系
 
-```text
-role: coverage
-framing.scale: medium_wide
-subject.configuration: two
-camera.position: low_angle toward standing_subject
-viewpoint: objective
-camera.motion: locked_off
-subject.blocking: standing_subject remains still; seated_subject looks up
-optics.focus: deep_focus
-temporal: real_time, 8s
-intent: dominance, vulnerability
+```yaml
+role:
+  primary: coverage
+framing:
+  scale: medium_wide
+subject:
+  configuration: two
+  blocking:
+    - subject: standing_subject
+      action: remains_still # 站立者保持不动
+    - subject: seated_subject
+      action: looks_up_at_standing_subject # 坐着的人抬头看站立者
+camera:
+  position:
+    height: waist_level
+    vertical_angle: low_angle
+    horizontal_view: three_quarter_front
+  viewpoint:
+    type: objective
+  motion:
+    type: locked_off
+optics:
+  focus:
+    mode: deep_focus
+temporal_edit:
+  playback_mode: real_time
+  duration_seconds: 8
+intent:
+  intended_effect: dominance
+  observed_effect: vulnerability
 ```
 
 ### 示例 C：从空间建立到主角出现
 
-```text
-role: establishing
-framing.scale: extreme_wide
-subject.configuration: single
-subject.visibility: enters_frame_at_2s
-camera.position: aerial_height, high_angle
-camera.motion_beats:
-  - 0-2s: locked_off on empty station platform
-  - 2-5s: crane_down and tilt toward the far entrance
-  - 5-7s: slow dolly_in as one traveler enters frame
-subject.action: traveler walks into frame and stops beneath the station clock
-temporal: single_take, 7s
-intent: reveal, anticipation
+```yaml
+role:
+  primary: establishing
+framing:
+  scale: extreme_wide
+subject:
+  configuration: single
+  blocking:
+    enters_frame: at 2s, from far entrance # 2秒时从远处入口入画
+  action: walks in and stops beneath the station clock # 走入站台并停在时钟下
+camera:
+  position:
+    height: aerial_height
+    vertical_angle: high_angle
+  motion:
+    beats:
+      - start: 0s
+        end: 2s
+        type: locked_off # 固定机位拍空站台
+      - start: 2s
+        end: 5s
+        types: [crane_down, tilt_down] # 摇臂下降并向下摇至远处入口
+      - start: 5s
+        end: 7s
+        type: dolly_in
+        speed: slow # 缓慢推轨，旅客进入画面
+temporal_edit:
+  continuity: single_take
+  playback_mode: real_time
+  duration_seconds: 7
+intent:
+  intended_effect: reveal
+  observed_effect: anticipation
 ```
 
 ## 16. 组合规则与常见错标
@@ -473,9 +536,9 @@ intent: reveal, anticipation
 | 把“向上摇”和“升机”合成一个标签 | tilt 是绕机位转动，pedestal/crane 是机位移动 | 分别记录旋转与空间平移，可同时出现 |
 | 把 rack focus 写成镜头运动 | 它改变清晰焦点，不一定改变机位 | 放在 `optics.focus.mode` |
 | 把静态倾斜画框写成动态 roll | 静态倾斜描述机位/画框状态；roll 描述镜头在时间中的旋转 | 前者标 `camera.position.roll_orientation`，后者标 `camera.motion.type: roll_clockwise / roll_counterclockwise` |
-| 把慢动作写成慢速运镜 | 慢动作改变影像时间；慢速运镜改变摄影机移动速度 | 分别标 `temporal.playback_speed` 和 `camera.motion.speed` |
+| 把慢动作写成慢速运镜 | 慢动作改变影像时间；慢速运镜改变摄影机移动速度 | 分别标 `temporal_edit.playback_mode` 和 `camera.motion.speed` |
 | 把“建立镜头”默认成远景 | 建立是叙事功能，景别可以不同 | `role: establishing` 与 `framing.scale` 独立标注 |
-| 把镜头间转场记为镜头运动 | 剪切/叠化发生在镜头边界，不是镜头内的摄影机轨迹 | 在 `temporal_edit.incoming/outgoing_transition` 标注 |
+| 把镜头间转场记为镜头运动 | 剪切/叠化发生在镜头边界，不是镜头内的摄影机轨迹 | 在 `temporal_edit.incoming_transition/outgoing_transition` 标注 |
 
 ## 17. 标注一致性检查
 
