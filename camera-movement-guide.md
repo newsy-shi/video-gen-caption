@@ -171,6 +171,9 @@ Runway 建议用简单、正向的动作描述，并在运动过程中说明画�
 | **Google Veo** | 官方提示指南列出静止、pan、tilt、dolly、truck、pedestal、zoom、crane、aerial、handheld、whip pan、arc 等术语；部分高级术语的可靠性可能变化。 | 术语后补可见轨迹和终点。分清 dolly 和 zoom、truck 和 pan；复杂运动写出途中画面。参见 [Veo Video Generation Prompt Guide](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/video/video-gen-prompt-guide)。 |
 | **Runway Gen-4 / Gen-4.5** | 文字可描述 locked、handheld、dolly、pan、跟随主体或独立移动、焦点转换；Camera Terms 页面提供术语、例句和输出示例。具体功能依模型版本和模式而定。 | 图生视频时输入图负责起始构图和外观，文字集中写运动；从简短动作开始，逐项添加。要固定镜头时也描述画面内部的动作和进出画面。参见 [Gen-4 指南](https://help.runwayml.com/hc/en-us/articles/39789879462419-Gen-4-Video-Prompting-Guide) 与 [Camera Terms](https://help.runwayml.com/hc/en-us/articles/47313504791059-Camera-Terms-Prompts-Examples)。 |
 | **Kling** | 官方页面介绍文本提示、多镜头/分镜、元素参考及独立 Camera Movement 控制；相机控制可提供方向和位移强度，具体按钮和模型版本会变化。 | 若 UI 有运动方向/强度控制，用它承担路径控制，提示词说明主体动作和画面意图；若用多镜头模式，逐镜头写景别、动作和镜头变化。参见 [Camera Movement Guide](https://kling.ai/quickstart/ai-camera-control-guide)、[VIDEO 3.0 Guide](https://kling.ai/quickstart/klingai-video-3-model-user-guide)。 |
+| **Seedance 2.0** | ByteDance Seed 官方资料介绍多模态参考输入，可参照视频中的构图、动作节奏和运镜；示例展示提示词驱动的镜头规划、快速摇摄、推近与环绕。 | 直接说清镜头运动和场面调度；有参考视频或分镜时，指定它负责提供运镜/节奏，其他素材负责角色或场景，避免参考职责混在一起。参见 [Seedance 2.0 官方发布说明](https://seed.bytedance.com/en/blog/seedance-2-0-official-launch)。 |
+| **Seedance 2.5** | 官方发布说明突出长叙事、多轮延展、多模态参考和按时间点编辑；示例用时间段写镜头环绕、拉远、遮挡衔接，也支持 clay render 参考运镜、景别变化、主体轨迹和调度。 | 多镜头/长镜头可用时间段逐段写“景别 + 运镜 + 主体动作 + 衔接”；若路径复杂，使用参考视频或白模/空间预演提供机位和轨迹。不要把 2.0 的示例视为 2.5 的界面参数说明。参见 [Seedance 2.5 官方发布说明](https://seed.bytedance.com/en/blog/one-take-creation-flexible-referencing-introducing-seedance-2-5)。 |
+| **MiniMax H3** | MiniMax 官方提示写作指南将运镜写成自然语言，并拆为**运动类型、幅度、速度**；列出 push/pull、zoom、pan、truck、tilt、pedestal、arc、tracking、static、POV、roll 等。多镜头按 `[Shot N]` 和时间点组织；参考模式可指定参考视频提供运镜、剪辑节奏或时间结构。 | H3 应遵循它自己的自然语言提示结构，例如 “The camera pushes in with small amplitude at slow speed…”；别照搬旧版 Hailuo/第三方 CLI 的 `[Push in]` 方括号命令，除非你使用的具体入口明确支持。参见 [MiniMax H3 官方基础提示指南](https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_base_en.md)、[H3 参考模式指南](https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md)。 |
 | **Adobe Firefly Video** | 某些模式提供 Zoom in/out、Move left/right、Tilt up/down、Static、Handheld；特定流程可使用视频作为相机运动参考。支持项受模型和输入帧影响。 | 有相机控件时用 UI 指定方向，再用提示词写主体和目的；参考运动片段应简洁且运动清楚。先确认添加首帧/尾帧后哪些相机选项仍可用。参见 [Firefly Camera Motion](https://helpx.adobe.com/firefly/web/work-with-audio-and-video/work-with-video/generate-videos-using-images.html)、[Motion Reference](https://helpx.adobe.com/firefly/web/work-with-audio-and-video/work-with-video/match-camera-motion-to-reference-video.html)。 |
 
 ### 文字提示、UI 控件和参考视频如何分工
@@ -256,16 +259,21 @@ Adobe Firefly 的参考功能可从一段视频提取 pan、zoom、circle 等摄
 
 以下资料分别提供电影摄影课程结构、专业训练和视频模型的官方使用建议。影视术语可帮助沟通，但不能保证生成模型逐字按物理机制执行。
 
-### 电影摄影课程与专业资料
+### 电影摄影课程与模型实战课程
 
 - [Berklee Online — Digital Cinematography Fundamentals](https://online.berklee.edu/courses/digital-cinematography-fundamentals)：课程将动机运镜、摇摄、俯仰、跟拍、环绕、推拉、升降、手持、稳定器、静态镜头和长镜头放在同一摄影课程脉络中。
 - [Boston University — Intermediate Cinematography](https://www.bu.edu/academics/com/courses/com-ft-595/?wantsMobile=true)：课程以 Steadicam、Gimbal、Dolly、Jib 等器材和高级运镜设计训练视觉叙事。
 - [UCLA TFT — Cinematography MFA](https://www.tft.ucla.edu/programs/cinematography-mfa/)：把故事结构、角色、镜头、光线、色彩、运动和实践拍摄作为摄影训练的一体内容。
+- [MiniMax / Hailuo AI × 香港中文大学 — From Prompting to Directing](https://www.minimax.io/news/from-prompting-to-directing-hailuo-ai-cuhk)：模型方与中大合办的大师课，主题包括电影式提示结构、镜头运动、跨场景视觉一致性和迭代导演实践。
 - [American Society of Cinematographers — American Cinematographer Manual, 11th Edition](https://theasc.com/news/announcing-new-edition-of-american-cinematographer-manual/)：美国电影摄影师协会的专业技术手册，适合进一步查阅摄影机、镜头和摄影技术；本指南没有从付费/版权书籍中摘录内容。
 
 ### 视频生成模型官方资料
 
 - [OpenAI — Sora 2 Prompting Guide](https://developers.openai.com/cookbook/examples/sora/sora2_prompting_guide)
+- [MiniMax — H3 Official Video Prompt Writing Guide (base / keyframe mode)](https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_base_en.md)
+- [MiniMax — H3 Official Full-Reference Mode Guide](https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md)
+- [ByteDance Seed — Seedance 2.0 Official Launch](https://seed.bytedance.com/en/blog/seedance-2-0-official-launch)
+- [ByteDance Seed — Introducing Seedance 2.5](https://seed.bytedance.com/en/blog/one-take-creation-flexible-referencing-introducing-seedance-2-5)
 - [Google Cloud — Video Generation Prompt Guide](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/video/video-gen-prompt-guide)
 - [Runway — Gen-4 Video Prompting Guide](https://help.runwayml.com/hc/en-us/articles/39789879462419-Gen-4-Video-Prompting-Guide)
 - [Runway — Camera Terms, Prompts, & Examples](https://help.runwayml.com/hc/en-us/articles/47313504791059-Camera-Terms-Prompts-Examples)
