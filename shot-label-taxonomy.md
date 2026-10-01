@@ -204,19 +204,55 @@
 
 ### G3. 运动参数 `parameters`
 
-- `speed`: `very_slow / slow / medium / fast / very_fast`
-- `acceleration`: `constant / ease_in / ease_out / accelerate / decelerate / abrupt_stop`
-- `amplitude`: `subtle / small / medium / large / full_360`
-- `stability`: `locked / smooth / stabilized / lightly_handheld / shaky / chaotic`
-- `duration_seconds`: 运动实际持续时间
-- `start_state` / `end_state`: 起止机位或景别
-- `path_description`: 路径自然语言补充
+- `speed`：摄影机路径的移动速度，可标 `very_slow / slow / medium / fast / very_fast`。尽可能写可观察的参照，如“3 秒横移约 2 米”；仅写 `slow` 时，应按项目统一的主观等级理解。它不等于主体动作速度，也不等于慢动作。
+- `acceleration`：运动速度随时间的变化，可标 `constant / ease_in / ease_out / ease_in_out / accelerate / decelerate / abrupt_start / abrupt_stop`。`ease_in` 表示由慢到快的平滑起步，`ease_out` 表示逐渐减速；若只是短促的起停，用 `abrupt_start/stop`。
+- `amplitude`：运动覆盖的空间范围或旋转角度，不是速度。按类型补充角度、距离或高度：摇摄可写 `pan_degrees: 90`，环绕可写 `orbit_degrees: 180`，平移可写 `travel_distance_m: 1.5`，升降可写 `vertical_travel_m: 2`。粗略分级可用 `subtle / small / medium / large / full_360`，并在项目内校准边界。
+- `stability`：成片中可见的机位稳定程度，可标 `locked / smooth / stabilized / lightly_handheld / shaky / chaotic`。它描述画面观感，不代表用了哪种器材；例如云台也可能因快速运动呈现明显抖动。
+- `duration_seconds`：该段摄影机运动持续时间，不一定等于整条镜头时长。若整条镜头 8 秒、其中推轨 3 秒，可记录 `shot_duration_seconds: 8` 与 `camera.motion.duration_seconds: 3`。
+- `start_state` / `end_state`：运动开始和结束时的机位、朝向或景别，例如 `wide, eye_level` → `close, eye_level`。景别变化若由主体靠近造成，应记录主体运动，不能仅凭景别变化推断摄影机在动。
+- `path_description`：受控标签无法完整表达时，用一句话说明三维路线、绕行对象、方向基准和终点，例如“从人物右后方起步，顺时针绕行约 120°，停在正面中近景”。
 
-若一个镜头有多个阶段，使用有序 `motion_beats`，不要把互相冲突的速度和方向同时堆在一个值里。
+**标注顺序：**先确定 `type`（做什么运动），再定 `tracking_relation`（是否跟随谁），最后补速度、幅度、加减速、稳定感和持续时间。只有确实可观察或提示词明确要求的参数才填写；未知值留空或标 `unknown`，避免从结果反推器材或精确数据。
+
+**分段运动：**一条镜头内运动方向、速度或类型发生明显变化时，按时间顺序写 `motion_beats`，每段沿用相同字段结构。比如 `0–2s locked_off`、`2–5s slow dolly_in / ease_in`、`5–6s abrupt_stop`。不要把互相冲突的速度和方向堆在同一字段，也不要用一个平均速度抹掉有意义的节拍。
+
+```yaml
+camera:
+  motion:
+    type: orbit_left
+    tracking_relation: independent
+    speed: slow
+    acceleration: ease_in_out
+    amplitude: medium
+    orbit_degrees: 120
+    duration_seconds: 4
+    stability: smooth
+    start_state: three_quarter_front_medium
+    end_state: profile_medium
+    path_description: 从静止人物正前方偏右起步，向左环绕约120度，保持与人物距离基本不变
+```
+
+示例中的 `orbit_left` 是路径类型，`independent` 表示路线不依赖主体移动，`slow` 和 `120°/4s` 是速度与幅度信息；这些字段不能互相替代。
 
 ### G4. 支撑方式 `camera_support`
 
-支撑方式是设备/质感标签，不是路径：`tripod`、`dolly_rig`、`steadicam`、`gimbal`、`handheld`、`jib_crane`、`drone`、`vehicle_rig`、`body_mount`、`motion_control_rig`。例如“gimbal + forward tracking”是稳定方式与移动路径组合；“handheld”也可能原地持机，并非一定跟拍。
+`camera_support` 记录实际或提示词指定的支撑设备/拍摄平台。它回答“摄影机由什么支撑或搭载”，不回答“摄影机往哪里走”；路线写在 `camera.motion.type/path_description`，最终稳定感写在 `camera.motion.stability`。
+
+| 类别 | 标签 | 使用说明 |
+|---|---|---|
+| 固定支撑 | `tripod`、`monopod` | 三脚架通常支持固定机位和摇/俯仰；独脚架可移动但稳定性有限。`tripod` 不必然等于 `locked_off`，也可以配合云台摇摄 |
+| 轨道/滑动 | `dolly_rig`、`slider` | 支持平顺的直线移动；具体方向、距离仍由运动路径字段标注 |
+| 摇臂/升降 | `jib_crane` | 支持较大幅度升降或弧线升降；短小机臂也可只做轻微垂直移动 |
+| 稳定器 | `steadicam`、`gimbal` | 适合行走、跟拍和复杂移动。Steadicam 与电子云台的结构不同，但提示词只要求稳定移动时可统称为稳定器风格；不要仅凭画面平滑就断定使用了哪一种 |
+| 手持/肩扛 | `handheld`、`shoulder_rig` | 可静止持机，也可跟拍；分别记录路径和抖动程度。肩扛常有身体传递的细微起伏，但不等于必然剧烈摇晃 |
+| 身体/主观搭载 | `body_mount`、`helmet_mount` | 摄影机固定在身体或头盔上，常用于第一人称运动镜头；只有画面确实模拟角色所见时，才另标 `viewpoint: subjective_pov` |
+| 车辆/移动平台 | `vehicle_rig`、`car_mount`、`process_trailer` | 摄影机固定在车辆或移动平台上；车辆行驶路线与摄影机相对车辆的运动要分清 |
+| 空中/索道 | `drone`、`helicopter_rig`、`cable_cam` | 记录空中或索道平台；“航拍”是拍摄位置/方式描述，不足以单独说明镜头是否平移、升降或环绕 |
+| 程序化控制 | `motion_control_rig`、`robotic_arm` | 可重复、精确控制的路径，常用于合成、产品和特效拍摄；具体运动仍按路径字段记录 |
+
+允许组合记录多个支撑方式，例如 `dolly_rig + motion_control_rig`。推荐字段可写 `camera.support.primary` 和 `camera.support.secondary`；若只想描述生成视频的观感而不知道真实设备，写 `support: unknown`，把“平滑跟随”“肩扛晃动”等放入 `stability` 或提示词风格描述。
+
+**区分示例：**`gimbal + truck_right + follow_profile + smooth` 表示云台支撑、向右横移、侧向跟随且画面平滑；`handheld + locked_off + lightly_handheld` 表示手持支撑但没有明确路径，画面保留轻微自然晃动；无人机垂直上升应记录为 `support: drone` 加 `motion.type: pedestal_up`，不能把 `drone` 当成运动标签。
 
 ## 9. G 类：主体运动与场面调度 `subject.action`
 
